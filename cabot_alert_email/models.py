@@ -35,7 +35,7 @@ class EmailAlert(AlertPlugin):
     name = "Email"
     author = "Jonathan Balls"
 
-    def send_alert(self, service, users, duty_officers):
+    def send_service_alert(self, service, users, duty_officers):
         emails = [u.email for u in users if u.email]
         if not emails:
             return
@@ -52,7 +52,21 @@ class EmailAlert(AlertPlugin):
         else:
             subject = 'Service back to normal: %s' % (service.name,)
             t = Template(email_service_template)
-
+        send_mail(
+            subject=subject,
+            message=t.render(c),
+            from_email='Cabot <%s>' % env.get('CABOT_FROM_EMAIL'),
+            recipient_list=emails,
+        )
+    def send_instance_alert(self, instance, users, duty_officers):
+        emails = [u.email for u in users if u.email]
+        if not emails:
+            return
+        c = Context({
+            'service': instance,
+            'host': settings.WWW_HTTP_HOST,
+            'scheme': settings.WWW_SCHEME
+        })
         if instance.overall_status != instance.PASSING_STATUS:
             if instance.overall_status == instance.CRITICAL_STATUS:
                 emails += [u.email for u in users if u.email]
