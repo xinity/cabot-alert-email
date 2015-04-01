@@ -35,7 +35,7 @@ class EmailAlert(AlertPlugin):
     name = "Email"
     author = "Jonathan Balls"
 
-    def send_alert(self, service, users, duty_officers):
+    def service_send_alert(self, service, users, duty_officers):
         emails = [u.email for u in users if u.email]
         if not emails:
             return
@@ -58,7 +58,7 @@ class EmailAlert(AlertPlugin):
                 from_email='Cabot <%s>' % env.get('CABOT_FROM_EMAIL'),
                 recipient_list=emails,
         )
-    def send_alert(self, instance, users, duty_officers):
+    def instance_send_alert(self, instance, users, duty_officers):
         emails = [u.email for u in users if u.email]
         if not emails:
             return
